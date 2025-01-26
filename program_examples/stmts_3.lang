@@ -1,0 +1,16 @@
+var a;
+a   := (1 + 2 / 3) * 3 == 4  ;  
+var b;
+b := 0;
+
+while a > 3 {
+    read b; 
+
+    a := a / 2;
+}
+if a < 2{
+    skip;
+} else {
+    b := b + 2;
+}
+write a + b * 3; 

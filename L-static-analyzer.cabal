@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -25,7 +25,12 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Data
+      ExprParser
+      Lexer
+      PrgParser
+      StmtsParser
+      Syntax
   other-modules:
       Paths_L_static_analyzer
   autogen-modules:
@@ -35,6 +40,10 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers
+    , megaparsec
+    , parsec
+    , parser-combinators
   default-language: Haskell2010
 
 executable L-static-analyzer-exe
@@ -49,6 +58,10 @@ executable L-static-analyzer-exe
   build-depends:
       L-static-analyzer
     , base >=4.7 && <5
+    , containers
+    , megaparsec
+    , parsec
+    , parser-combinators
   default-language: Haskell2010
 
 test-suite L-static-analyzer-test
@@ -64,4 +77,8 @@ test-suite L-static-analyzer-test
   build-depends:
       L-static-analyzer
     , base >=4.7 && <5
+    , containers
+    , megaparsec
+    , parsec
+    , parser-combinators
   default-language: Haskell2010

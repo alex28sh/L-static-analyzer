@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "L-static-analyzer:lib"
+
+    - path: "./app/Main.hs"
+      component: "L-static-analyzer:exe:L-static-analyzer-exe"
+
+    - path: "./test"
+      component: "L-static-analyzer:test:L-static-analyzer-test"

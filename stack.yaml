@@ -8,18 +8,21 @@
 # A snapshot resolver dictates the compiler version and the set of packages
 # to be used for project dependencies. For example:
 #
-# resolver: lts-3.5
-# resolver: nightly-2015-09-21
-# resolver: ghc-7.10.2
+# resolver: lts-22.20
+# resolver: ghc-9.6.4
+# resolver: hls-2.7.0.0
 #
 # The location of a snapshot can be provided as a file or url. Stack assumes
 # a snapshot provided as a file might change, whereas a url resource does not.
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
+# compiler: ghc-9.6.4
 resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/4.yaml
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/20.yaml
 
+allow-newer: true
+system-ghc: true
 # User packages to be built.
 # Various formats can be used as shown in the example below.
 #
@@ -65,3 +68,15 @@ packages:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+
+# extra-deps:
+#   - co-log-core-0.3.2.1
+#   - hie-compat-0.3.1.2
+#   - hiedb-0.5.0.1
+#   - hls-graph-2.6.0.0
+#   - hls-plugin-api-2.6.0.0
+#   - implicit-hie-0.1.4.0
+#   - lsp-2.3.0.0
+  # - row-types-1.0.1.2
+  # - rope-utf16-splay-0.4.0.0
+#   - lsp-types-1.1.0.0
