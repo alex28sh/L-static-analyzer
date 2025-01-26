@@ -64,20 +64,20 @@ data Statement =
     Read String |
     While Expression Statements |
     If Expression Statements Statements |
-    VarDecl String | 
+    VarDecl String |
     Skip
     deriving (Eq, Show)
 
 type Statements = [Statement]
 type Args = [String]
 
-data Definition = 
+data Definition =
     Definition String Args Statements
     deriving (Eq, Show)
 
 type Definitions = [Definition]
 
-data Program = Program Definitions Statements 
+data Program = Program Definitions Statements
     deriving (Eq, Show)
 
 someFunc :: IO ()

@@ -9,8 +9,8 @@ import           Lexer                          (comma, digit, lIdentifier,
                                                  lexeme, roundBr, sc, symbol)
 import           Syntax
 import           Text.Megaparsec                (MonadParsec (try), choice, eof,
-                                                 many, sepBy, sepBy1, some,
-                                                 (<?>), (<|>), notFollowedBy)
+                                                 many, notFollowedBy, sepBy,
+                                                 sepBy1, some, (<?>), (<|>))
 
 
 completeExpr :: Parser Expression

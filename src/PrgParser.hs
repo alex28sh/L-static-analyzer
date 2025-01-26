@@ -1,31 +1,31 @@
-module PrgParser where 
+module PrgParser where
 
-import Syntax 
-import Lexer
-import StmtsParser
-import Syntax (Definitions)
-import Data.List (partition)
-import Data (Parser)
-import           Text.Megaparsec                (MonadParsec (try), choice, eof,
-                                                 many, sepBy, sepBy1, some,
-                                                 (<?>), (<|>), notFollowedBy)
-import StmtsParser (parseBlock)
+import           Data            (Parser)
+import           Data.List       (partition)
+import           Lexer
+import           StmtsParser
+import           StmtsParser     (parseBlock)
+import           Syntax
+import           Syntax          (Definitions)
+import           Text.Megaparsec (MonadParsec (try), choice, eof, many,
+                                  notFollowedBy, sepBy, sepBy1, some, (<?>),
+                                  (<|>))
 
-defParser :: Parser Definition 
+defParser :: Parser Definition
 defParser = symbol "def" *> (Definition <$> lIdentifier <*> parseFunArgs <*> parseBlock)
-    where 
+    where
         parseFunArgs = roundBr (lIdentifier `sepBy` comma)
 
 defsParser :: Parser Definitions
 defsParser = many defParser
 
 prgParser :: Parser Program
-prgParser = do 
+prgParser = do
     defs <- defsParser
-    case partition (\(Definition name _ _) -> name == "main") defs of 
-        ([], _) -> fail "No main function found"
+    case partition (\(Definition name _ _) -> name == "main") defs of
+        ([], _)                        -> fail "No main function found"
         ([Definition _ _ stmts], defs) -> return $ Program defs stmts
-        (_, _) -> fail "Multiple main functions found"
+        (_, _)                         -> fail "Multiple main functions found"
 
 completePrgParser :: Parser Program
 completePrgParser = prgParser <* eof
