@@ -3,14 +3,12 @@ module ExprParser where
 
 import           Control.Monad.Combinators.Expr
 import           Data                           (Parser)
-import           Data.Map                       hiding (map)
-import           Debug.Trace                    (trace)
 import           Lexer                          (comma, digit, lIdentifier,
-                                                 lexeme, roundBr, sc, symbol)
+                                                 roundBr, sc, symbol)
 import           Syntax
-import           Text.Megaparsec                (MonadParsec (try), choice, eof,
-                                                 many, notFollowedBy, sepBy,
-                                                 sepBy1, some, (<?>), (<|>))
+import           Text.Megaparsec                (MonadParsec (try), eof,
+                                                 notFollowedBy, sepBy, some,
+                                                 (<|>))
 
 
 completeExpr :: Parser Expression

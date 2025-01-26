@@ -2,17 +2,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 module Data where
 
-import           Data.List                  (intercalate)
-import           Data.List.NonEmpty         (NonEmpty (..))
-import           Data.Void                  (Void (..))
-import           Text.Megaparsec            (MonadParsec (try), Parsec,
-                                             ShowErrorComponent, between,
-                                             errorBundlePretty, many, runParser,
-                                             (<|>))
-import           Text.Megaparsec.Char       (alphaNumChar, char, letterChar,
-                                             lowerChar, spaceChar, upperChar)
-import qualified Text.Megaparsec.Char.Lexer as L
-import           Text.Printf                (printf)
+import           Data.List          (intercalate)
+import           Data.List.NonEmpty (NonEmpty (..))
+import           Data.Void          (Void)
+import           Text.Megaparsec    (Parsec)
+import           Text.Printf        (printf)
 
 type Parser = Parsec Void String
 

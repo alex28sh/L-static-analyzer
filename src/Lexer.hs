@@ -4,9 +4,8 @@ import           Control.Monad              (void)
 import           Data                       (Parser, reserved)
 import           Data.Char                  (isDigit, isLetter)
 import           Text.Megaparsec            (MonadParsec (try), between, many,
-                                             satisfy, (<|>))
-import           Text.Megaparsec.Char       (alphaNumChar, char, letterChar,
-                                             lowerChar, spaceChar, upperChar)
+                                             satisfy)
+import           Text.Megaparsec.Char       (spaceChar)
 import qualified Text.Megaparsec.Char.Lexer as L
 import           Text.Printf                (printf)
 

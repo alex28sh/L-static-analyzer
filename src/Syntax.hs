@@ -1,4 +1,3 @@
-
 module Syntax where
 
 import           Data.Map
@@ -35,7 +34,7 @@ binOpShowMap = fromList [(Sub, "-"),
                          (Or, "||")]
 
 
-instance Show (BinOp) where
+instance Show BinOp where
     show binOp = binOpShowMap ! binOp
 
 data UnOp =
@@ -45,7 +44,7 @@ data UnOp =
 unOpShowMap :: Map UnOp String
 unOpShowMap = fromList [(SubUn, "-")]
 
-instance Show (UnOp) where
+instance Show UnOp where
     show unOp = unOpShowMap ! unOp
 
 data Expression =

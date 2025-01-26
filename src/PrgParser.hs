@@ -4,12 +4,8 @@ import           Data            (Parser)
 import           Data.List       (partition)
 import           Lexer
 import           StmtsParser
-import           StmtsParser     (parseBlock)
 import           Syntax
-import           Syntax          (Definitions)
-import           Text.Megaparsec (MonadParsec (try), choice, eof, many,
-                                  notFollowedBy, sepBy, sepBy1, some, (<?>),
-                                  (<|>))
+import           Text.Megaparsec (eof, many, sepBy)
 
 defParser :: Parser Definition
 defParser = symbol "def" *> (Definition <$> lIdentifier <*> parseFunArgs <*> parseBlock)

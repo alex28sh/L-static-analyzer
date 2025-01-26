@@ -1,21 +1,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 module StmtsParser where
 
-import           Control.Monad.Combinators.Expr
-import           Data                           (Parser)
-import           Data.Functor                   (($>))
-import           Data.Map                       hiding (map)
-import           Debug.Trace                    (trace)
-import           Lexer                          (comma, curvyBr, digit,
-                                                 lIdentifier, lexeme, roundBr,
-                                                 sc, symbol)
-import           Text.Megaparsec                (MonadParsec (try), choice, eof,
-                                                 many, notFollowedBy, sepBy,
-                                                 sepBy1, some, (<?>), (<|>))
+import           Data            (Parser)
+import           Data.Functor    (($>))
 
-import           ExprParser                     (parseExpr, parseExprInBr,
-                                                 parseFunCall)
+import           ExprParser      (parseExpr, parseFunCall)
+import           Lexer           (curvyBr, lIdentifier, sc, symbol)
 import           Syntax
+import           Text.Megaparsec (MonadParsec (try), eof, many, (<|>))
 
 
 completeStmts :: Parser Statements
