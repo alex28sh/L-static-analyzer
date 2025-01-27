@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
-module ExprParser where
+module Parser.ExprParser where
 
 import           Control.Monad.Combinators.Expr
 import           Data                           (Parser)
-import           Lexer                          (comma, digit, lIdentifier,
+import           Parser.Lexer                   (comma, digit, lIdentifier,
                                                  roundBr, sc, symbol)
 import           Syntax
 import           Text.Megaparsec                (MonadParsec (try), eof,

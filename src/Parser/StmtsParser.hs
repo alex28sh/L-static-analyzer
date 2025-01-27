@@ -1,13 +1,13 @@
 {-# LANGUAGE FlexibleInstances #-}
-module StmtsParser where
+module Parser.StmtsParser where
 
-import           Data            (Parser)
-import           Data.Functor    (($>))
+import           Data              (Parser)
+import           Data.Functor      (($>))
 
-import           ExprParser      (parseExpr, parseFunCall)
-import           Lexer           (curvyBr, lIdentifier, sc, symbol)
+import           Parser.ExprParser (parseExpr, parseFunCall)
+import           Parser.Lexer      (curvyBr, lIdentifier, sc, symbol)
 import           Syntax
-import           Text.Megaparsec (MonadParsec (try), eof, many, (<|>))
+import           Text.Megaparsec   (MonadParsec (try), eof, many, (<|>))
 
 
 completeStmts :: Parser Statements

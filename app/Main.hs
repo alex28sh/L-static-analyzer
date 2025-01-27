@@ -1,7 +1,8 @@
 module Main where
 
 import Text.Megaparsec
-import PrgParser (completePrgParser)
+import Parser.PrgParser (completePrgParser)
+import Interpreter.Eval (evalPrg)
 
 main :: IO ()
 main = do
@@ -15,5 +16,5 @@ main = do
         Left err ->
             putStrLn $ errorBundlePretty err
         Right expr ->
-            print expr
+            print expr >> evalPrg expr
 

@@ -1,4 +1,4 @@
-module Lexer where
+module Parser.Lexer where
 
 import           Control.Monad              (void)
 import           Data                       (Parser, reserved)

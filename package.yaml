@@ -25,6 +25,9 @@ dependencies:
 - parsec
 - containers
 - parser-combinators
+- transformers
+- mtl
+- composition
 
 ghc-options:
 - -Wall
