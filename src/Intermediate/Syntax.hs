@@ -1,4 +1,10 @@
-module Syntax where
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE Rank2Types         #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE ImpredicativeTypes #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
+
+module Intermediate.Syntax where
 
 import           Data.Map
 
@@ -61,23 +67,20 @@ data Statement =
     Assignment String Expression |
     Write Expression |
     Read String |
-    While Expression Statements |
-    If Expression Statements Statements |
+    While Expression Statement |
+    If Expression Statement Statement |
     VarDecl String |
+    SeqStmt Statement Statement |
     Skip
     deriving (Eq, Show)
 
-type Statements = [Statement]
 type Args = [String]
 
 data Definition =
-    Definition String Args Statements
+    Definition String Args Statement
     deriving (Eq, Show)
 
 type Definitions = [Definition]
 
-data Program = Program Definitions Statements
+data Program = Program Definitions Statement
     deriving (Eq, Show)
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"

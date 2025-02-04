@@ -1,16 +1,19 @@
 {-# LANGUAGE FlexibleInstances #-}
-module Parser.StmtsParser where
+module Intermediate.Parser.StmtsParser where
 
-import           Data              (Parser)
-import           Data.Functor      (($>))
+import           Data.Functor                   (($>))
+import           Intermediate.Data              (Parser)
 
-import           Parser.ExprParser (parseExpr, parseFunCall)
-import           Parser.Lexer      (curvyBr, lIdentifier, sc, symbol)
-import           Syntax
-import           Text.Megaparsec   (MonadParsec (try), eof, many, (<|>))
+import           Intermediate.Parser.ExprParser (parseExpr, parseFunCall)
+import           Intermediate.Parser.Lexer      (curvyBr, lIdentifier, sc,
+                                                 symbol)
+import           Intermediate.Syntax
+import           Text.Megaparsec                (MonadParsec (try), eof, many,
+                                                 (<|>))
 
 
-completeStmts :: Parser Statements
+
+completeStmts :: Parser Statement
 completeStmts = stmtsParser <* eof
 
 
@@ -49,8 +52,11 @@ stmtParser =
                 (symbol "else" *>
                     parseBlock))
 
-stmtsParser :: Parser Statements
-stmtsParser = many stmtParser
+stmtsParser :: Parser Statement
+stmtsParser = do
+    (x:lst) <- many stmtParser
+    return $ foldl SeqStmt x lst
 
-parseBlock :: Parser Statements
+
+parseBlock :: Parser Statement
 parseBlock = curvyBr stmtsParser

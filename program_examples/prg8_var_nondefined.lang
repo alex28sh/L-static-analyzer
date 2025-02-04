@@ -1,0 +1,11 @@
+def main() {
+    var a;
+    read a;
+    if (a > 0) {
+        var b;
+        b := a + 10;
+    } else {
+        write b;
+    }
+    return 0;
+}

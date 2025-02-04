@@ -1,8 +1,10 @@
 module Main where
 
 import Text.Megaparsec
-import Parser.PrgParser (completePrgParser)
-import Interpreter.Eval (evalPrg)
+import           Control.Monad.Trans.Except (runExceptT)
+import Intermediate.Parser.PrgParser (completePrgParser)
+import Typed.Compile (compilePrg)
+import Typed.Eval (evalPrg)
 
 main :: IO ()
 main = do
@@ -15,6 +17,9 @@ main = do
     case ans of
         Left err ->
             putStrLn $ errorBundlePretty err
-        Right expr ->
-            print expr >> evalPrg expr
+        Right expr -> do
+            pr1 <- runExceptT (compilePrg expr) 
+            case pr1 of 
+                Left err -> print err 
+                Right compiled -> evalPrg compiled 
 

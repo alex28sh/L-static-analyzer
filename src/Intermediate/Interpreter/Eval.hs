@@ -1,4 +1,4 @@
-module Interpreter.Eval where
+module Intermediate.Interpreter.Eval where
 
 import           Control.Monad              (when)
 import           Control.Monad.State        (MonadState (get),
@@ -8,7 +8,7 @@ import           Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 import           Data.Bits                  ((.&.), (.|.))
 import           Data.Composition           ((.:))
 import qualified Data.Map.Strict            as M
-import           Syntax
+import           Intermediate.Syntax
 import           Text.Read                  (readMaybe)
 
 type VarMap = M.Map String Int
@@ -55,7 +55,7 @@ callFun name args = do
     let (Definition _ argsNames stmts) = mapDef M.! name
     argsVals <- mapM evalExpr args
     let argsMap = M.fromList $ zip argsNames argsVals
-    res <- lift $ evalStateT (evalStmts stmts) (argsMap, argsNames, mapDef)
+    res <- lift $ evalStateT (evalStmt stmts) (argsMap, argsNames, mapDef)
     case res of
         Just x -> return x
         Nothing -> lift $ throwE $ NoReturn (name ++ show stmts ++ show argsVals)
@@ -66,25 +66,20 @@ readSafe str =
     Just n  -> return n
     Nothing -> lift $ throwE $ ParsingErr str
 
-evalStmts :: Statements -> EvalM (Maybe Int)
-evalStmts stmts =
-    case stmts of
-        [] -> return Nothing
-        (s:ss) -> evalStmt s >>=
-            \v -> case v of
-                Just x  -> return v
-                Nothing -> evalStmts ss
-
 evalStmt :: Statement -> EvalM (Maybe Int)
+evalStmt (SeqStmt s ss) = evalStmt s >>=
+    \v -> case v of
+        Just x  -> return v
+        Nothing -> evalStmt ss
 evalStmt (ReturnStmt e) = Just <$> evalExpr e
 evalStmt (FunCallStmt name args) = callFun name args >> return Nothing
 evalStmt (VarDecl x) = addVar x >> return Nothing
 evalStmt (Assignment x e) = (evalExpr e >>= updateVar x) >> return Nothing
-evalStmt (If e s1 s2) = evalExpr e >>= \x -> if x /= 0 then evalStmts s1 else evalStmts s2
+evalStmt (If e s1 s2) = evalExpr e >>= \x -> evalStmt (if x /= 0 then s1 else s2)
 evalStmt (While e s) = do
     x <- evalExpr e
     if x /= 0 then
-        evalStmts (s ++ [While e s])
+        evalStmt (SeqStmt s $ While e s)
     else
         return Nothing
 evalStmt (Read x) = (lift $ lift getLine) >>= readSafe >>= updateVar x >> return Nothing
@@ -95,7 +90,7 @@ evalStmt Skip = return Nothing
 evalPrg :: Program -> IO ()
 evalPrg (Program defs stmts) = do
     let mapDef = M.fromList $ map (\d@(Definition name _ _) -> (name, d)) defs
-    res <- runExceptT $ evalStateT (evalStmts stmts) (M.empty, [], mapDef)
+    res <- runExceptT $ evalStateT (evalStmt stmts) (M.empty, [], mapDef)
     case res of
         Left err -> print err
         Right _  -> return ()

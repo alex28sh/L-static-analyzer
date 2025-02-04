@@ -1,11 +1,11 @@
-module Parser.PrgParser where
+module Intermediate.Parser.PrgParser where
 
-import           Data               (Parser)
-import           Data.List          (partition)
-import           Parser.Lexer
-import           Parser.StmtsParser
-import           Syntax
-import           Text.Megaparsec    (eof, many, sepBy)
+import           Data.List                       (partition)
+import           Intermediate.Data               (Parser)
+import           Intermediate.Parser.Lexer
+import           Intermediate.Parser.StmtsParser
+import           Intermediate.Syntax
+import           Text.Megaparsec                 (eof, many, sepBy)
 
 defParser :: Parser Definition
 defParser = symbol "def" *> (Definition <$> lIdentifier <*> parseFunArgs <*> parseBlock)

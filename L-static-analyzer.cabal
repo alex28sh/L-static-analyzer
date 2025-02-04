@@ -25,13 +25,17 @@ source-repository head
 
 library
   exposed-modules:
-      Data
-      Interpreter.Eval
-      Parser.ExprParser
-      Parser.Lexer
-      Parser.PrgParser
-      Parser.StmtsParser
-      Syntax
+      Intermediate.Data
+      Intermediate.Interpreter.Eval
+      Intermediate.Parser.ExprParser
+      Intermediate.Parser.Lexer
+      Intermediate.Parser.PrgParser
+      Intermediate.Parser.StmtsParser
+      Intermediate.Syntax
+      Typed.Compile
+      Typed.Eval
+      Typed.PostProcessing
+      Typed.Syntax
   other-modules:
       Paths_L_static_analyzer
   autogen-modules:

@@ -1,8 +1,8 @@
-module Parser.Lexer where
+module Intermediate.Parser.Lexer where
 
 import           Control.Monad              (void)
-import           Data                       (Parser, reserved)
 import           Data.Char                  (isDigit, isLetter)
+import           Intermediate.Data          (Parser, reserved)
 import           Text.Megaparsec            (MonadParsec (try), between, many,
                                              satisfy)
 import           Text.Megaparsec.Char       (spaceChar)

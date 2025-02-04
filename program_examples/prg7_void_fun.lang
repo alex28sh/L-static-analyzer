@@ -1,0 +1,10 @@
+def smth(a) {
+    write (a * 2);
+}
+
+def main() {
+    var a;
+    read a;
+    smth(a);
+    return 0;
+}

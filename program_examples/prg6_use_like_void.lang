@@ -1,0 +1,20 @@
+def fact(a, b) {
+    while (a != 0 && b != 0) {
+        if (a > b) {
+            a := a % b;
+        } else {
+            b := b % a;
+        }
+    }
+    return a + b;
+}
+
+def main() {
+    var a;
+    var b;
+    read a;
+    read b;
+    fact(a, b);
+    write(a + b);
+    return 0;
+}
