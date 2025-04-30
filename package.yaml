@@ -28,6 +28,8 @@ dependencies:
 - transformers
 - mtl
 - composition
+- aeson
+- bytestring
 
 ghc-options:
 - -Wall

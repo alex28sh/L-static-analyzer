@@ -44,7 +44,9 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
     , composition
     , containers
     , megaparsec
@@ -65,7 +67,9 @@ executable L-static-analyzer-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       L-static-analyzer
+    , aeson
     , base >=4.7 && <5
+    , bytestring
     , composition
     , containers
     , megaparsec
@@ -87,7 +91,9 @@ test-suite L-static-analyzer-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       L-static-analyzer
+    , aeson
     , base >=4.7 && <5
+    , bytestring
     , composition
     , containers
     , megaparsec

@@ -70,9 +70,17 @@ evalStmt (ReturnStmt e) = evalExpr e
 evalStmt (VarDecl x) = addVar x
 evalStmt Skip = return ()
 evalStmt (Assignment x e) = evalExpr e >>= updateVar x
-evalStmt (If e s1 s2) = evalExpr e >>= \x -> evalStmt (if x /= 0 then s1 else s2)
-evalStmt (While e s) = evalExpr e >>= \x -> when (x /= 0) (evalStmt (Seq s $ While e s))
-evalStmt (Read x) = (lift $ lift getLine) >>= readSafe >>= updateVar x
+evalStmt (If e s1 s2) = 
+  evalExpr e >>= 
+    \x -> evalStmt (if x /= 0 then s1 else s2)
+evalStmt (While e s) = 
+  evalExpr e >>=
+     \x -> when (x /= 0) (evalStmt (Seq s $ While e s))
+evalStmt (Read x) = 
+  (lift $ lift $ putStrLn $ "Enter value for variable " ++ x ++ ":") >>
+  (lift $ lift getLine) >>= 
+  readSafe >>= 
+  updateVar x
 evalStmt (Write e) = evalExpr e >>= \v -> lift $ lift $ print v
 evalStmt (FunCallStmt name args) = callFunVoid name args
 
@@ -83,7 +91,8 @@ evalPrg p@(Program defs stmts) = do
     reschecks <- runExceptT (performChecks p)
     case reschecks of
       Left err -> error $ show err
-      Right () -> print "checked successfully"
+      Right () -> putStrLn "checked successfully"
+    putStrLn "Interpreting:"
     res <- runExceptT $ evalStateT (evalStmt stmts) (M.empty, mapDef)
     case res of
       Left err -> print err

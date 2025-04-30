@@ -1,0 +1,28 @@
+def countSetBits(n) {
+    var count;
+    count := 0;
+    while (n > 0) {
+        n := n && (n - 1);
+        count := count + 1;
+    }
+    return count;
+}
+
+def main() {
+    var a;
+    read a;
+    var res;
+    res := countSetBits(a);
+    write res;
+    return 0;
+}
+
+
+/* int countSetBits(int n) {
+    int count = 0;
+    while (n) {
+        n &= (n - 1); // Clear the least significant bit set
+        count++;
+    }
+    return count;
+} */

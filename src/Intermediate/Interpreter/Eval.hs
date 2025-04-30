@@ -82,7 +82,12 @@ evalStmt (While e s) = do
         evalStmt (SeqStmt s $ While e s)
     else
         return Nothing
-evalStmt (Read x) = (lift $ lift getLine) >>= readSafe >>= updateVar x >> return Nothing
+evalStmt (Read x) = 
+    (lift $ lift $ putStrLn $ "Enter value for variable " ++ x ++ ":") >>
+    (lift $ lift getLine) >>= 
+    readSafe >>= 
+    updateVar x >> 
+    return Nothing
 evalStmt (Write e) = (evalExpr e >>= \v -> lift $ lift $ print v) >> return Nothing
 evalStmt Skip = return Nothing
 

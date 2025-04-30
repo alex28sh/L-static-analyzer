@@ -5,11 +5,14 @@ import           Control.Monad.Trans.Except (runExceptT)
 import Intermediate.Parser.PrgParser (completePrgParser)
 import Typed.Compile (compilePrg)
 import Typed.Eval (evalPrg)
+import Data.Aeson (encodeFile)
 
 main :: IO ()
 main = do
     putStrLn "Type file to parse:"
     fileName <- getLine
+    putStrLn "Type file to save json:"
+    fileNameJson <- getLine
     content <- readFile fileName
 
     putStrLn content
@@ -18,8 +21,10 @@ main = do
         Left err ->
             putStrLn $ errorBundlePretty err
         Right expr -> do
+            encodeFile fileNameJson expr
             pr1 <- runExceptT (compilePrg expr) 
             case pr1 of 
                 Left err -> print err 
-                Right compiled -> evalPrg compiled 
+                Right compiled -> 
+                    evalPrg compiled 
 

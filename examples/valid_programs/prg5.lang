@@ -1,0 +1,29 @@
+def fib(n) {
+    var a;
+    var b;
+    a := 0;
+    b := 1;
+    while (n >= 1) {
+        var c;
+        c := a + b;
+        a := b;
+        b := c;
+        n := n - 1;
+    }
+    return a;
+}
+
+def main() {
+    var n;
+    read n;
+    var sum;
+    sum := fib(n);
+    if (n >= 1) {
+        sum := sum + fib(n - 1);
+    } 
+    if (n >= 2) {
+        sum := sum + fib(n - 2);
+    }
+    write sum;
+    return 0;
+}

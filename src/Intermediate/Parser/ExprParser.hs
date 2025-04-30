@@ -31,10 +31,10 @@ operatorTable =
         binary "+" $ BinExpr Add
      ],
      [
-        binary ">" $ BinExpr Gt,
-        binary "<" $ BinExpr Lt,
         binary ">=" $ BinExpr Ge,
-        binary "<=" $ BinExpr Le
+        binary "<=" $ BinExpr Le,
+        binary ">" $ BinExpr Gt,
+        binary "<" $ BinExpr Lt
      ],
      [
         binary "==" $ BinExpr Eq,

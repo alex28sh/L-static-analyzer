@@ -1,0 +1,19 @@
+def gcd(a, b) {
+    while (a != 0 && b != 0) {
+        if (a > b) {
+            a := a - b;
+        } else {
+            b := b - a;
+        }
+    }
+    return a + b;
+}
+
+def main() {
+    var a;
+    var b;
+    read a;
+    read b;
+    write gcd(a, b);
+    return 0;
+}

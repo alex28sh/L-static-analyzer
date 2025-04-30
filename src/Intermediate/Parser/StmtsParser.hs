@@ -20,7 +20,7 @@ completeStmts = stmtsParser <* eof
 stmtParserColon :: Parser Statement
 stmtParserColon =
         (try parseReturn <|> try parseFunCallStmt <|> try parseAssignment
-    <|> try parseWrite <|> try parseRead <|> try parseSkip <|> try parseVarDecl) <* symbol ";"
+    <|> try parseWrite <|> try parseRead <|> try parseSkip <|> parseVarDecl) <* symbol ";"
     where
         parseReturn =
             symbol "return" *> (ReturnStmt <$> parseExpr)
@@ -40,17 +40,15 @@ stmtParserColon =
 
 stmtParser :: Parser Statement
 stmtParser =
-        sc *> (try stmtParserColon <|> try parseWhile <|> try parseIf)
+        sc *> (try stmtParserColon <|> try parseWhile <|> parseIf)
     where
         parseWhile =
             symbol "while" *>
                 (While <$> parseExpr <*> parseBlock)
         parseIf =
-            symbol "if" *>
-                (If <$> parseExpr <*>
-                    parseBlock <*>
-                (symbol "else" *>
-                    parseBlock))
+            symbol "if" *> (If <$> parseExpr <*> parseBlock <*> optionalElse)
+          where
+            optionalElse = (symbol "else" *> parseBlock) <|> pure Skip
 
 stmtsParser :: Parser Statement
 stmtsParser = do

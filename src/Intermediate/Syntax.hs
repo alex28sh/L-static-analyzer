@@ -3,10 +3,13 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# LANGUAGE ImpredicativeTypes #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Intermediate.Syntax where
 
+import GHC.Generics
 import           Data.Map
+import Data.Aeson (ToJSON (..), defaultOptions, genericToEncoding)
 
 data BinOp =
     Sub |
@@ -22,7 +25,7 @@ data BinOp =
     Le  |
     And |
     Or
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Generic)
 
 binOpShowMap :: Map BinOp String
 binOpShowMap = fromList [(Sub, "-"),
@@ -45,7 +48,7 @@ instance Show BinOp where
 
 data UnOp =
     SubUn
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Generic)
 
 unOpShowMap :: Map UnOp String
 unOpShowMap = fromList [(SubUn, "-")]
@@ -59,7 +62,7 @@ data Expression =
     FunCall String [Expression] |
     Variable String |
     Const Int
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic)
 
 data Statement =
     ReturnStmt Expression |
@@ -72,15 +75,33 @@ data Statement =
     VarDecl String |
     SeqStmt Statement Statement |
     Skip
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic)
 
 type Args = [String]
 
 data Definition =
     Definition String Args Statement
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic)
 
 type Definitions = [Definition]
 
 data Program = Program Definitions Statement
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic)
+
+instance ToJSON UnOp where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON BinOp where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Expression where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Statement where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Definition where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Program where
+    toEncoding = genericToEncoding defaultOptions
