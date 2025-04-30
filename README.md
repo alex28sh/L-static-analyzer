@@ -1,6 +1,7 @@
 # L-static-analyzer
 
 Project was initially intended to play with different type systems imposed on the language and static analyses. 
+Now the development is switched to compilation to [LLVM](https://github.com/alex28sh/LLVM/) and performing passes with it.
 
 Now there are 2 implementations of language 
 1) [Simple implementation](src/Intermediate), that does not improse such requirements as for example - requirement for the function to return values of the same type: 
