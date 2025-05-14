@@ -23,7 +23,7 @@ compile (I.ReturnStmt exp) = return $ IntStmt $ ReturnStmt exp
 compile I.Skip = return $ UnitStmt Skip
 compile (I.Write e) = return $ UnitStmt $ Write e
 compile (I.Read v) = return $ UnitStmt $ Read v
-compile (I.VarDecl x) = return $ UnitStmt $ VarDecl x
+compile (I.VarDecl _ x) = return $ UnitStmt $ VarDecl x
 compile (I.SeqStmt s1 s2) = do
     r1 <- compile s1
     r2 <- compile s2
@@ -44,7 +44,7 @@ compile (I.While e s) = do
     case r of
         UnitStmt r -> return $ UnitStmt $ While e r
         _          -> throwE TypeError
-compile (I.Assignment x e) = return $ UnitStmt $ Assignment x e
+compile (I.Assignment lhs e) = return $ UnitStmt $ Assignment lhs e
 compile (I.FunCallStmt name es) = return $ UnitStmt $ FunCallStmt name es
 
 compilePrg :: (Monad m) => I.Program -> ExceptT TCompileError m Program

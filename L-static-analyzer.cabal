@@ -96,9 +96,11 @@ test-suite L-static-analyzer-test
     , bytestring
     , composition
     , containers
+    , hspec
     , megaparsec
     , mtl
     , parsec
     , parser-combinators
+    , silently
     , transformers
   default-language: Haskell2010

@@ -56,28 +56,42 @@ unOpShowMap = fromList [(SubUn, "-")]
 instance Show UnOp where
     show unOp = unOpShowMap ! unOp
 
+data Type = TInt | TPtr Type
+    deriving (Eq, Ord, Generic)
+
+instance Show Type where
+    show TInt       = "int"
+    show (TPtr t)   = show t ++ "*"
+
 data Expression =
     BinExpr BinOp Expression Expression |
     UnExpr UnOp Expression |
     FunCall String [Expression] |
-    Variable String |
-    Const Int
+    Access Access | 
+    Const Int |
+    NewArr Type Expression 
+    deriving (Eq, Show, Generic)
+
+data Access = 
+    ArrayIdx Access Expression |
+    Variable String
     deriving (Eq, Show, Generic)
 
 data Statement =
     ReturnStmt Expression |
     FunCallStmt String [Expression] |
-    Assignment String Expression |
+    Assignment Access Expression |
     Write Expression |
-    Read String |
+    Read Access |
     While Expression Statement |
     If Expression Statement Statement |
-    VarDecl String |
+    VarDecl Type String |
     SeqStmt Statement Statement |
     Skip
     deriving (Eq, Show, Generic)
 
-type Args = [String]
+type Arg = (Type, String)
+type Args = [Arg]
 
 data Definition =
     Definition String Args Statement
@@ -104,4 +118,10 @@ instance ToJSON Definition where
     toEncoding = genericToEncoding defaultOptions
 
 instance ToJSON Program where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Type where
+    toEncoding = genericToEncoding defaultOptions
+
+instance ToJSON Access where
     toEncoding = genericToEncoding defaultOptions

@@ -4,13 +4,19 @@ import           Data.List                       (partition)
 import           Intermediate.Data               (Parser)
 import           Intermediate.Parser.Lexer
 import           Intermediate.Parser.StmtsParser
+import           Intermediate.Parser.ExprParser (parseType)
 import           Intermediate.Syntax
 import           Text.Megaparsec                 (eof, many, sepBy)
 
 defParser :: Parser Definition
 defParser = symbol "def" *> (Definition <$> lIdentifier <*> parseFunArgs <*> parseBlock)
     where
-        parseFunArgs = roundBr (lIdentifier `sepBy` comma)
+        parseFunArgs = roundBr (parseFunArg `sepBy` comma)
+          where
+            parseFunArg = do
+                ty <- parseType
+                name <- lIdentifier
+                return (ty, name)
 
 defsParser :: Parser Definitions
 defsParser = many defParser

@@ -4,12 +4,12 @@ module Intermediate.Parser.StmtsParser where
 import           Data.Functor                   (($>))
 import           Intermediate.Data              (Parser)
 
-import           Intermediate.Parser.ExprParser (parseExpr, parseFunCall)
+import           Intermediate.Parser.ExprParser (parseExpr, parseFunCall, parseType)
 import           Intermediate.Parser.Lexer      (curvyBr, lIdentifier, sc,
-                                                 symbol)
+                                                 symbol, boxBr)
 import           Intermediate.Syntax
 import           Text.Megaparsec                (MonadParsec (try), eof, many,
-                                                 (<|>))
+                                                 lookAhead, (<|>))
 
 
 
@@ -27,16 +27,32 @@ stmtParserColon =
         parseFunCallStmt = do
             FunCall name args <- parseFunCall
             return $ FunCallStmt name args
-        parseAssignment =
-            Assignment <$> lIdentifier <*> (symbol ":=" *> parseExpr)
+        parseAssignment = do
+            lhs <- parseAccess
+            symbol ":="
+            rhs <- parseExpr
+            return $ Assignment lhs rhs
         parseWrite =
             symbol "write" *> (Write <$> parseExpr)
         parseRead =
-            symbol "read" *> (Read <$> lIdentifier)
+            symbol "read" *> (Read <$> parseAccess)
         parseVarDecl =
-            symbol "var" *> (VarDecl <$> lIdentifier)
+            VarDecl <$> parseType <*> lIdentifier
         parseSkip =
             symbol "skip" $> Skip
+
+parseAccess :: Parser Access
+parseAccess = do
+    root <- Variable <$> lIdentifier
+    buildAccess root
+  where
+    buildAccess acc = do
+      hasIdx <- (True <$ lookAhead (symbol "[")) <|> pure False
+      if hasIdx
+        then do
+          idx <- boxBr parseExpr
+          buildAccess (ArrayIdx acc idx)
+        else return acc
 
 stmtParser :: Parser Statement
 stmtParser =

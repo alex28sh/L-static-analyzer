@@ -6,14 +6,14 @@
 
 module Typed.Syntax where
 
-import           Intermediate.Syntax (Args, Expression)
+import           Intermediate.Syntax (Args, Expression, Access)
 
 data Statement a where
     ReturnStmt :: Expression -> Statement Int
     FunCallStmt :: String -> [Expression] -> Statement ()
-    Assignment :: String -> Expression -> Statement ()
+    Assignment :: Access -> Expression -> Statement ()
     Write :: Expression -> Statement ()
-    Read :: String -> Statement ()
+    Read :: Access -> Statement ()
     While :: Expression -> Statement () -> Statement ()
     If :: Expression -> Statement a -> Statement a -> Statement a
     VarDecl :: String -> Statement ()

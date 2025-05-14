@@ -9,7 +9,7 @@ import           Control.Monad.State        (MonadState (get),
                                              modify, put)
 import           Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 import           Data.List
-import           Intermediate.Syntax        (Expression (..))
+import           Intermediate.Syntax        (Expression (..), Access(..))
 import           Typed.Syntax
 
 
@@ -44,13 +44,16 @@ checkVarsExpr :: (Monad m) => Expression -> StateT Env (ExceptT TPostError m) ()
 checkVarsExpr (BinExpr _ l r) = checkVarsExpr l >> checkVarsExpr r
 checkVarsExpr (UnExpr _ l) = checkVarsExpr l
 checkVarsExpr (FunCall _ es) = mapM_ checkVarsExpr es
-checkVarsExpr (Variable x) = get >>= \env -> when (x `notElem` env) (lift $ throwE $ NonExistingVar x)
+checkVarsExpr (Access (Variable x)) = get >>= \env -> when (x `notElem` env) (lift $ throwE $ NonExistingVar x)
 checkVarsExpr _ = return ()
 
 checkVarsStmt :: (Monad m) => Statement a -> StateT Env (ExceptT TPostError m) ()
 checkVarsStmt (Seq q1 q2) = checkVarsStmt q1 >> checkVarsStmt q2
 checkVarsStmt (SeqInt q1 q2) = checkVarsStmt q1 >> checkVarsStmt q2
-checkVarsStmt (Assignment x e) = get >>= \env -> when (x `notElem` env) (lift $ throwE $ NonExistingVar x) >> checkVarsExpr e
+checkVarsStmt (Assignment lhs e) = case lhs of
+    Variable x -> get >>= \env -> when (x `notElem` env) (lift $ throwE $ NonExistingVar x) >> checkVarsExpr e
+    ArrayIdx arrExpr idxExpr -> checkVarsExpr (Access arrExpr) >> checkVarsExpr idxExpr >> checkVarsExpr e
+    _ -> checkVarsExpr (Access lhs) >> checkVarsExpr e
 checkVarsStmt (While e s) = checkVarsExpr e >> checkVarsStmt s
 checkVarsStmt (If e s1 s2) = checkVarsExpr e >> get >>= \st -> put st >> checkVarsStmt s1 >> put st >> checkVarsStmt s2
 checkVarsStmt (Write e) = checkVarsExpr e
@@ -66,4 +69,4 @@ performChecks (Program defs stmt) =
     (pure (map (\(Definition _ _ st) -> st) defs ++ [IntStmt stmt]) >>= \stmts ->
     mapM_ (wrapper (checkFunCallsStmt defs)) stmts) >>
     evalStateT (checkVarsStmt stmt) [] >>
-    mapM_ (\(Definition _ args st) -> wrapper (\st -> evalStateT (checkVarsStmt st) args) st) defs
+    mapM_ (\(Definition _ args st) -> let names = map snd args in wrapper (\st -> evalStateT (checkVarsStmt st) names) st) defs

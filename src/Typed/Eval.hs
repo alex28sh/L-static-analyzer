@@ -1,4 +1,3 @@
-
 module Typed.Eval where
 
 import           Control.Monad                 (void, when)
@@ -9,7 +8,7 @@ import           Control.Monad.Trans.Except    (ExceptT, runExceptT, throwE)
 import qualified Data.Map.Strict               as M
 import           Intermediate.Interpreter.Eval (mapBinOp, mapUnOp)
 import           Intermediate.Syntax           (BinOp (..), Expression (..),
-                                                UnOp (..))
+                                                UnOp (..), Access(..))
 import           Text.Read                     (readMaybe)
 import           Typed.PostProcessing          (performChecks)
 import           Typed.Syntax
@@ -27,7 +26,7 @@ addVar :: String -> EvalM ()
 addVar x = modify $ \(mapVar, mapDef) -> (M.insert x 0 mapVar, mapDef)
 
 evalExpr :: Expression -> EvalM Int
-evalExpr (Variable s) = do
+evalExpr (Access (Variable s)) = do
   (varMap, _) <- get
   return $ varMap M.! s
 evalExpr (Const x) = return x
@@ -48,7 +47,8 @@ readSafe str =
 callFun :: String -> [Expression] -> EvalM Int
 callFun name args = do
     (_, mapDef) <- get
-    let (Definition _ argsNames (IntStmt stmts)) = mapDef M.! name
+    let (Definition _ argsPairs (IntStmt stmts)) = mapDef M.! name
+    let argsNames = map snd argsPairs
     argsVals <- mapM evalExpr args
     let argsMap = M.fromList $ zip argsNames argsVals
     lift $ evalStateT (evalStmt stmts) (argsMap, mapDef)
@@ -56,7 +56,8 @@ callFun name args = do
 callFunVoid :: String -> [Expression] -> EvalM ()
 callFunVoid name args = do
     (_, mapDef) <- get
-    let (Definition _ argsNames stmts) = mapDef M.! name
+    let (Definition _ argsPairs stmts) = mapDef M.! name
+    let argsNames = map snd argsPairs
     argsVals <- mapM evalExpr args
     let argsMap = M.fromList $ zip argsNames argsVals
     case stmts of
@@ -69,18 +70,21 @@ evalStmt (Seq s1 s2) = evalStmt s1 >> evalStmt s2
 evalStmt (ReturnStmt e) = evalExpr e
 evalStmt (VarDecl x) = addVar x
 evalStmt Skip = return ()
-evalStmt (Assignment x e) = evalExpr e >>= updateVar x
+evalStmt (Assignment lhs e) = case lhs of
+    Variable x -> evalExpr e >>= updateVar x
+    _ -> lift $ throwE $ ParsingErr "Invalid assignment target in typed eval"
 evalStmt (If e s1 s2) = 
   evalExpr e >>= 
     \x -> evalStmt (if x /= 0 then s1 else s2)
 evalStmt (While e s) = 
   evalExpr e >>=
      \x -> when (x /= 0) (evalStmt (Seq s $ While e s))
-evalStmt (Read x) = 
+evalStmt (Read (Variable x)) = 
   (lift $ lift $ putStrLn $ "Enter value for variable " ++ x ++ ":") >>
   (lift $ lift getLine) >>= 
   readSafe >>= 
   updateVar x
+evalStmt (Read _) = lift $ throwE $ ParsingErr "Can only read into simple variable"
 evalStmt (Write e) = evalExpr e >>= \v -> lift $ lift $ print v
 evalStmt (FunCallStmt name args) = callFunVoid name args
 

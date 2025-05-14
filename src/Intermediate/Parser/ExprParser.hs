@@ -4,11 +4,12 @@ module Intermediate.Parser.ExprParser where
 import           Control.Monad.Combinators.Expr
 import           Intermediate.Data              (Parser)
 import           Intermediate.Parser.Lexer      (comma, digit, lIdentifier,
-                                                 roundBr, sc, symbol)
+                                                 roundBr, boxBr, sc, symbol)
 import           Intermediate.Syntax
 import           Text.Megaparsec                (MonadParsec (try), eof,
                                                  notFollowedBy, sepBy, some,
-                                                 (<|>))
+                                                 many, (<|>))
+import           Data.Functor                   (($>))
 
 
 completeExpr :: Parser Expression
@@ -57,13 +58,34 @@ parseConst :: Parser Expression
 parseConst =
     sc *> try (Const . read <$> some digit)
 
-parseVar :: Parser Expression
-parseVar =
-    sc *> try (Variable <$> lIdentifier) <* notFollowedBy (symbol "(")
+-- Parse an Access (variable or nested array indexing)
+parseAccess :: Parser Access
+parseAccess = do
+    sc
+    root <- Variable <$> lIdentifier
+    buildAccess root
+  where
+    buildAccess acc = (do
+        idx <- boxBr parseExpr
+        buildAccess (ArrayIdx acc idx)) <|> return acc
 
-parseArguments :: Parser [Expression]
-parseArguments =
-    sc *> sepBy parseExpr comma
+-- Wrap access into an Expression
+parseAccessExpr :: Parser Expression
+parseAccessExpr = Access <$> parseAccess
+
+parseNewArr :: Parser Expression
+parseNewArr = do
+    sc *> symbol "new"
+    ty <- parseType
+    size <- boxBr parseExpr
+    return $ NewArr ty size
+
+-- Parse simple types like int, int*, int** etc.
+parseType :: Parser Type
+parseType = do
+    base <- symbol "int" $> TInt
+    stars <- many (symbol "*")
+    return $ foldl (const . TPtr) base stars
 
 parseFunCall :: Parser Expression
 parseFunCall =
@@ -71,6 +93,10 @@ parseFunCall =
     lIdentifier <*>
     roundBr parseArguments
 
+parseArguments :: Parser [Expression]
+parseArguments =
+    sc *> sepBy parseExpr comma
+
 parseSimpleExpr :: Parser Expression
 parseSimpleExpr =
-    try parseExprInBr <|> try parseVar <|> try parseConst <|> try parseFunCall
+    try parseExprInBr <|> try parseNewArr <|> try parseFunCall <|> try parseAccessExpr <|> parseConst
